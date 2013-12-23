@@ -1,10 +1,11 @@
 \documentclass[12pt]{article}
 \usepackage{graphicx, subfigure, float, amsmath, amssymb, color}
 \usepackage[margin = 1.0 in]{geometry}
-\usepackage{natbib}
+\usepackage[backend=biber,firstinits=true,sorting=none]{biblatex}
+\addbibresource{article.bib}
 
 \title{Accessing biological data with semantic web technologies}
-\author{Egon L.\ Willighagen$^1$}
+\author{Egon L.\ Willighagen$^1,2$}
 \begin{document}
 
 \date{\today}
@@ -12,6 +13,7 @@
 
 \noindent
 $^1$ Department of Bioinformatics - BiGCaT, NUTRIM, Maastricht University, Maastricht, The Netherlands
+$^2$ Department of Molecular Toxicology, IMM, Karolinska Institutet, Stockholm, Sweden
 
 \bigskip
 \noindent
@@ -32,11 +34,71 @@ Manuscript type: research article
 \end{abstract}
 
 \section{Introduction}
-\label{Introduction}
 
-Foo~\cite{Willighagen2011}.
+Semantic Web technologies are finding their way into biological
+databases~\cite{Belleau2008,Chen2010,Samwald2011,Williams2012,Willighagen2013}. The recent launch of the
+Resource Description Framework (RDF) services at the European Bioinformatics Institute is a good example
+of the impact it has on the field, despite the adoption taking place for longer already~\cite{EBIRDFPlatform}.
+At the same time, most new databases do not yet use semantic web technologies, which may be partly
+caused by the lack of availability of tools to handle RDF data.
 
-\bibliographystyle{peerj} % from: https://github.com/clauswilke/protein_design_and_site_variability/blob/master/latex/peerj.bst
-\bibliography{article}
+RDF allows the combination of a machine readable framework with the use of ontologies that allow
+sharing data and the meaning in the some data exchange format. This is enabled by a set of open
+specifications, such as the underlying RDF, RDF Schema, the Web Ontology Language, and serialization formats
+such as RDF/XML, N-TRIPLES, and Turtle. Crucial, however, seems the specification of the SPARQL
+query language that allow extracting data from local or remote RDF triple stores~\cite{Seaborne2009}. In fact,
+federated SPARQL queries allow extracting data from multiple triple stores at the same time.
+
+At the same time, R has established itself as a key tool for statistics, particularly in the biological
+sciences. Many packages have been developed for this domain and are available from CRAN and Bioconductor,
+allowing to combine various bioinformatics and data analysis approaches. These packages include,
+for example, biomaRt, which have the purpose of extracting information from a remote database.
+
+We here introduce two packages, rrdflibs and rrdf, for the statistics environment R, based on the Apache
+Jena library and the RJava interface to Java~\cite{RMan,Jena,RJava}. Using this package we show how
+data aggregation can be performed from remote SPARQL end points, and how local data in other formats
+can be converted into RDF to querying with SPARQL.
+
+\section{Materials \& Methods}
+
+The rrdf packages provides RDF and SPARQL functionality by exposing that functionality from the
+Apache Jena library~\cite{Jena}. The rrdflibs package contains the Apache Jena libraries and
+nothing more. This package is close to 7~MiB large but does not change frequently. The rrdf
+package contains the R functions that wrap around the Jena functionality and convert data structures
+where needed. This package is about 112~kiB but changes more frequently. Using this approach,
+the Comprehensive R Archive Network (CRAN) server has the least amount of download throughput.
+The Jena functionality is accessible using the rJava library~\cite{RJava} which handles loading
+of the Java archives and provides methods to instantiate classes and call methods.
+
+The source code of the package is available from GitHub at \url{http://github.com/egonw/rrdf/} and
+binary packages are available from CRAN at \url{http://cran.r-project.org/web/packages/rrdf/}.
+The first patch is from March 2011 while the most recent patches are from late 2013 when the
+rrdflibs package was updated for Apache Jena 2.11.
+
+\section{Results and Discussion}
+
+The rrdf package provides basic and less basic functionality for aggregation and analysis of RDF data.
+The package can be install and loaded with these commands:
+
+\begin{verbatim}
+install.packages(c("rrdf", "rrdflibs"))
+library(rrdf)
+\end{verbatim}
+
+\subsection{Triple stores}
+
+
+
+\subsection{SPARQL}
+
+
+\section{Conclusions}
+
+\section{Acknowledgements}
+
+The people who have provided feedback on the rrdf package are kindly thanked for their efforts in
+getting into contact with me.
+
+\printbibliography
 
 \end{document}
