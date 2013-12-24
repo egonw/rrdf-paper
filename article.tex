@@ -45,7 +45,7 @@ caused by the lack of availability of tools to handle RDF data.
 RDF allows the combination of a machine readable framework with the use of ontologies that allow
 sharing data and the meaning in the some data exchange format. This is enabled by a set of open
 specifications, such as the underlying RDF, RDF Schema, the Web Ontology Language, and serialization formats
-such as RDF/XML, N-TRIPLES, and Turtle. Crucial, however, seems the specification of the SPARQL
+such as RDF/XML, N-TRIPLES, Notation3 (N3), and Turtle. Crucial, however, seems the specification of the SPARQL
 query language that allow extracting data from local or remote RDF triple stores~\cite{Seaborne2009}. In fact,
 federated SPARQL queries allow extracting data from multiple triple stores at the same time.
 
@@ -87,12 +87,95 @@ library(rrdf)
 
 \subsection{Triple stores}
 
+To handle triples, we first need a triple store. At this moment only in-memory stores are
+supported, though Jena's TDB also provides on-disk triple stores; this puts limitations to
+the amount of data you can analyze in one study.
+The package supports two kinds of stores, one that has minimal ontology support, and one
+basically just handles triples. Both can be created with the \textit{new.rdf} command:
+
+\begin{verbatim}
+ontStore = new.rdf()
+store = new.rdf(ontology=FALSE)
+\end{verbatim}
+
+When data is not read from a file or downloaded, but created from data in another format,
+such as an R matrix, individual triples can be added to a store. This works for both
+object properties and data properties. The former option links a subject to an object
+resource, while the latter links a subject to a literal value:
+
+\begin{verbatim}
+add.triple(store,
+  subject="http://example.org/Subject",
+  predicate="http://example.org/Predicate",
+  object="http://example.org/Object"
+)
+add.data.triple(store,
+  subject="http://example.org/Subject",
+  predicate="http://example.org/Predicate",
+  data="Literal value"
+)
+\end{verbatim}
+
+Data can be loaded from file by providing a file name and a format ("RDF/XML", "TURTLE",
+"N-TRIPLES", and "N3"):
+
+\begin{verbatim}
+store = load.rdf("file.n3", format="N3")
+\end{verbatim}
+
+\subsection{Example}
+
 
 
 \subsection{SPARQL}
 
+Local (in-memory) triple stores can be queried with the \emph{sparql.rdf} method by providing
+it with the store to query and a string with the SPARQL query. For example, to get all resource
+types, we can use this:
+
+\begin{verbatim}
+sparql.rdf(store,
+  paste(
+    "SELECT DISTINCT ?type WHERE {",
+    " [] a ?type ",
+    "}"
+  )
+) 
+\end{verbatim}
+
+Remote SPARQL end point can be queried in a similar fashion: we replace the triple store with the
+URL pointing to the SPARQL end point. For example, if we want to
+extract all properties of the CHEMBL615603 assay from ChEMBL~\cite{OveringtonXXXX,Willighagen2013}
+we can use the following remote query:
+
+\begin{verbatim}
+results = sparql.remote(
+  "http://rdf.farmbio.uu.se/chembl/sparql",
+  paste(
+    "SELECT DISTINCT ?predicate ?object WHERE {",
+    " ?assay <http://www.w3.org/2000/01/rdf-schema#label> \"CHEMBL615603\" ;",
+    "        ?predicate ?object .",
+    "}"
+  )
+) 
+\end{verbatim}
+
+The results object is a matrix with the variable names from the SPARQL query as column names.
+This allows us to get a predicates with:
+
+\begin{verbatim}
+results[,"predicate"]
+\end{verbatim}
+
+\subsection{Example}
+
+...
 
 \section{Conclusions}
+
+The rrdflibs and rrdf packages bring semantic web technologies to R statistical environment.
+While only a subset of Apache Jena is currently exposed, it provides key methods to deal with
+RDF data and resources.
 
 \section{Acknowledgements}
 
