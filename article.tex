@@ -55,7 +55,8 @@ allowing to combine various bioinformatics and data analysis approaches. These p
 for example, biomaRt, which have the purpose of extracting information from a remote database.
 
 We here introduce two packages, rrdflibs and rrdf, for the statistics environment R, based on the Apache
-Jena library and the RJava interface to Java~\cite{RMan,Jena,RJava}. Using this package we show how
+Jena library and the RJava interface to Java~\cite{RMan,Jena,RJava}. Compared to the existing SPARQL
+package, this package adds general RDF data handling~\cite{VanHage2013}. Using this package we show how
 data aggregation can be performed from remote SPARQL end points, and how local data in other formats
 can be converted into RDF to querying with SPARQL.
 
@@ -125,7 +126,30 @@ store = load.rdf("file.n3", format="N3")
 
 \subsection{Example}
 
+As an example, we will here create RDF for a small data set with information on five single nucleotide
+polymorphisms (SNPs) in the BRCA1 gene, extracted with biomaRt~\cite{Durinck2005}:
 
+\begin{verbatim}
+library(biomaRt)
+mart = biomaNoy2009Rt::useMart(biomart="snp", dataset="hsapiens_snp")
+brca1 = c("rs16940","rs16941", "rs16942", "rs799916", "rs799917")
+attribs = c(
+  "refsnp_id", "chr_name", "chrom_start",
+  "validated", "pmid_20137", "allele"
+)
+data = biomaRt::getBM(
+  attributes=attribs, filters=c("snp_filter"), values=brca1, mart=mart
+)
+\end{verbatim}
+
+Following the guidelines for generating RDF outlined by Open PHACTS~\cite{Haupt2013,Williams2012}, we identify concepts
+and matching ontology terms, using BioPortal~\cite{Noy2009}: SNP, gene, chromosome,
+article, and allele. Additionally, there are the following properties: a SNP identifier, a PubMed identifier,
+a chromosome number, a chromosomal sequence position, and a list of validations (e.g. HapMap, 1000Genomes).
+The latter will not be further semantically specified, but just be converted into a RDF literal as it is
+provided by the BioMart.
+
+Taking advantage of 
 
 \subsection{SPARQL}
 
@@ -145,7 +169,7 @@ sparql.rdf(store,
 
 Remote SPARQL end point can be queried in a similar fashion: we replace the triple store with the
 URL pointing to the SPARQL end point. For example, if we want to
-extract all properties of the CHEMBL615603 assay from ChEMBL~\cite{OveringtonXXXX,Willighagen2013}
+extract all properties of the CHEMBL615603 assay from ChEMBL~\cite{Gaulton2012,Willighagen2013}
 we can use the following remote query:
 
 \begin{verbatim}
@@ -159,6 +183,13 @@ results = sparql.remote(
   )
 ) 
 \end{verbatim}
+
+Jena parses the SPARQL query too, which requires the query to be valid
+against both Jena and the SPARQL end point. Because the SPARQL specification has tool specif
+extensions and that not all tools support the full of SPARQL 1.1, it can sometimes be tricky
+to find the mutually support SPARQL command subset. The rrdf package also allows to bypass
+Jena and query the end point directly by using \emph{sparql.remote(..., jena=FALSE)},
+removing the problem and allowing you to use extensions of the end point.
 
 The results object is a matrix with the variable names from the SPARQL query as column names.
 This allows us to get a predicates with:
