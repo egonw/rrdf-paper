@@ -157,13 +157,52 @@ used are explained in the text.}
  \textbf{concept} & \textbf{ontology} & \textbf{term} & \textbf{URI} \\
 \hline
  SNP & SIO & snp & sio:SIO\_010027 \\
-\end{tabular}
+ gene & SO & gene & obo:SO\_0000704 \\
+ chromosome & GO & chromosome & obo:GO\_0005694 \\
+ article &  BIBO & article & bibo:Article \\
+ allele & SO & allele & obo:SO\_0001023 \\
+ SNP identifier & TMO & snp identifier & tmo:TMO\_0161 \\
+ PubMed identifier & CHEMINF & PubMed identifier & sio:CHEMINF\_000302\\
+ chromosome number & TMO & chromosome nuber & tmo:TMO\_0157 \\
+ chromosomal sequence position & TMO & chromosomal sequence position & tmo:TMO\_0122 \\
+\end{tabular}CiTO
 \end{center}
 \end{table}
 
-Taking advantage of ...
-SIO is the Semanticscience Integrated Ontology;
-... Prefixes used in the term Uniform Resource Identifiers (URIs) include sio for \url{http://semanticscience.org/resource/} ...
+Taking advantage of existing ontologies. The choice is somewhat arbitrary and no ontological
+analysis has been done, e.g. on specified domain and ranges of predicates and implied
+properties of classes. The following ontologies are used:
+SIO is the Semanticscience Integrated Ontology; TMO is the Translational Medicine Ontology;
+SO is the Sequence Types and Features Ontology; GO is the Gene Ontology;
+BIBO is the Bibliographic Ontology; CiTO is the Citation Typing Ontology;
+... Prefixes used in the term Uniform Resource Identifiers (URIs) include
+\textit{sio} for \url{http://semanticscience.org/resource/},
+\textit{tmo} for \url{http://www.w3.org/2001/sw/hcls/ns/transmed/},
+\textit{obo} for \url{http://purl.obolibrary.org/obo/},
+\textit{bibo} for \url{http://purl.org/ontology/bibo/},
+\textit{cito} for \url{} ...
+
+Using these ontology terms we can define the translations of the BioMart-extracted
+data into RDF:
+
+\begin{verbatim}
+snpStore = new.rdf(ontology=FALSE)
+rdfTypePred = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+snpClass = "http://semanticscience.org/resource/SIO_010027"
+createEntry <- function(row) {
+  snpID = row[1]
+  snpSubject = paste("http://example.org/snp/", snpID, sep="")
+  add.triple(snpStore,
+    subject=snpSubject, predicate=rdfTypePred, object=snpClass
+  )
+}
+\end{verbatim}
+
+We can then just iterate over the actual data with:
+
+\begin{verbatim}
+apply(data, MARGIN=1, FUN=createEntry(row) )
+\end{verbatim}
 
 \subsection{SPARQL}
 
@@ -215,6 +254,26 @@ results[,"predicate"]
 \subsection{Example}
 
 ...
+
+%\subsection{Example: BioPortal}
+%
+%In the BRCA1 SNP example, we found ontology terms for concepts using BioPortal. Now, at the
+%time of writing BioPortal has an experimental SPARQL end point which allows us to find terms
+%in this way too. For example, to find terms related to SNPs, we can run this code in R:
+%
+%\begin{verbatim}
+%findSNPterms = paste(
+%  "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>",
+%  "SELECT DISTINCT ?term ?label WHERE {",
+%  " ?term rdfs:label ?label .",
+%  "FILTER (CONTAINS (LCASE(str(?label)), \"snp\"))",
+%  "}"
+%)
+%sparql.remote(
+%  endpoint="http://sparql.bioontology.org/sparql",
+%  sparql=findSNPterms, jena=FALSE
+%)
+%\end{verbatim}
 
 \section{Conclusions}
 
