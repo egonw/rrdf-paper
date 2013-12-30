@@ -326,7 +326,7 @@ save.rdf(snpStore, filename="test.n3", format="N3")
 \end{verbatim}
 \end{footnotesize}
 
-Or output is as a Notation3 string with:
+Or output it as a Notation3 string with:
 
 \begin{footnotesize}
 \begin{verbatim}
@@ -389,33 +389,36 @@ results[,"predicate"]
 
 \subsection{Example}
 
-...
+Remote SPARQLing can be used to get more information about biological entities of interest. The following
+example retreives information from the Uniprot database using the experimental SPARQL end point. In
+particular, it retrieves annotations for proteins encoded by the BRCA1 gene:
 
-%\subsection{Example: BioPortal}
-%
-%In the BRCA1 SNP example, we found ontology terms for concepts using BioPortal. Now, at the
-%time of writing BioPortal has an experimental SPARQL end point which allows us to find terms
-%in this way too. For example, to find terms related to SNPs, we can run this code in R:
-%
-%\begin{verbatim}
-%findSNPterms = paste(
-%  "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>",
-%  "SELECT DISTINCT ?term ?label WHERE {",
-%  " ?term rdfs:label ?label .",
-%  "FILTER (CONTAINS (LCASE(str(?label)), \"snp\"))",
-%  "}"
-%)
-%sparql.remote(
-%  endpoint="http://sparql.bioontology.org/sparql",
-%  sparql=findSNPterms, jena=FALSE
-%)
-%\end{verbatim}
+\begin{verbatim}
+findAnnotations = paste(
+  "prefix up: <http://purl.uniprot.org/core/>",
+  "prefix ens: <http://purl.uniprot.org/ensembl/>",
+  "prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>",
+  "SELECT DISTINCT ?protein ?mnemonic ?comment WHERE {",
+  "  ?transcript up:transcribedFrom ens:ENSG00000012048 .",
+  "  ?protein a up:Protein ;",
+  "    rdfs:seeAlso ?transcript ;",
+  "    up:mnemonic ?mnemonic ;",
+  "    up:annotation ?annot .",
+  "  ?annot rdfs:comment ?comment .",
+  "}"
+)
+annotations = sparql.remote(
+  endpoint="http://beta.sparql.uniprot.org/",
+  sparql=findAnnotations, jena=FALSE
+)
+\end{verbatim}
 
 \section{Conclusions}
 
-The rrdflibs and rrdf packages bring semantic web technologies to R statistical environment.
+The rrdflibs and rrdf packages bring basic semantic web technologies to R statistical environment.
 While only a subset of Apache Jena is currently exposed, it provides key methods to deal with
-RDF data and resources.
+RDF data and resources. The examples shed some light on how it can find a place on more advanced
+analyses workflows.
 
 \section{Acknowledgements}
 
