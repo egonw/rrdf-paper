@@ -203,21 +203,21 @@ Taking advantage of existing ontologies. The choice is somewhat arbitrary and no
 analysis has been done, e.g. on specified domain and ranges of predicates and implied
 properties of classes. The following ontologies are used:
 SIO is the Semanticscience Integrated Ontology;
-TMO is the Translational Medicine Ontology;
+TMO is the Translational Medicine Ontology~\cite{Luciano2011};
 %SO is the Sequence Types and Features Ontology;
 GO is the Gene Ontology;
-BIBO is the Bibliographic Ontology;
-CiTO is the Citation Typing Ontology;
-... Prefixes used in the term Uniform Resource Identifiers (URIs) include
+BIBO is the Bibliographic Ontology~\cite{d2009bibliographic}; and, 
+CiTO is the Citation Typing Ontology~\cite{Shotton2010}.
+
+Prefixes used in the term Uniform Resource Identifiers (URIs) include
 \textit{sio} for \url{http://semanticscience.org/resource/},
 \textit{tmo} for \url{http://www.w3.org/2001/sw/hcls/ns/transmed/},
 \textit{obo} for \url{http://purl.obolibrary.org/obo/},
-\textit{bibo} for \url{http://purl.org/ontology/bibo/},
-\textit{cito} for \url{http://purl.org/spar/cito/} ...
-
-We can define these prefixes in the store with the following code,
-the first prefix in the full syntax and the other namespaces
-leaving out the parameters names:
+\textit{bibo} for \url{http://purl.org/ontology/bibo/}, and
+\textit{cito} for \url{http://purl.org/spar/cito/}.
+We can add these prefixes to the store. The following code examples
+shows the full syntax in the first addition, but leaves out the
+parameters names in the following additions:
 
 \begin{footnotesize}
 \begin{verbatim}
@@ -393,6 +393,7 @@ Remote SPARQLing can be used to get more information about biological entities o
 example retreives information from the Uniprot database using the experimental SPARQL end point. In
 particular, it retrieves annotations for proteins encoded by the BRCA1 gene:
 
+\begin{footnotesize}
 \begin{verbatim}
 findAnnotations = paste(
   "prefix up: <http://purl.uniprot.org/core/>",
@@ -412,6 +413,7 @@ annotations = sparql.remote(
   sparql=findAnnotations, jena=FALSE
 )
 \end{verbatim}
+\end{footnotesize}
 
 \section{Conclusions}
 
