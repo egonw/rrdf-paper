@@ -81,10 +81,12 @@ rrdflibs package was updated for Apache Jena 2.11.
 The rrdf package provides basic and less basic functionality for aggregation and analysis of RDF data.
 The package can be install and loaded with these commands:
 
+\begin{footnotesize}
 \begin{verbatim}
 install.packages(c("rrdf", "rrdflibs"))
 library(rrdf)
 \end{verbatim}
+\end{footnotesize}
 
 \subsection{Triple stores}
 
@@ -94,16 +96,19 @@ the amount of data you can analyze in one study.
 The package supports two kinds of stores, one that has minimal ontology support, and one
 basically just handles triples. Both can be created with the \textit{new.rdf} command:
 
+\begin{footnotesize}
 \begin{verbatim}
 ontStore = new.rdf()
 store = new.rdf(ontology=FALSE)
 \end{verbatim}
+\end{footnotesize}
 
 When data is not read from a file or downloaded, but created from data in another format,
 such as an R matrix, individual triples can be added to a store. This works for both
 object properties and data properties. The former option links a subject to an object
 resource, while the latter links a subject to a literal value:
 
+\begin{footnotesize}
 \begin{verbatim}
 add.triple(store,
   subject="http://example.org/Subject",
@@ -116,19 +121,42 @@ add.data.triple(store,
   data="Literal value"
 )
 \end{verbatim}
+\end{footnotesize}
+
+We can also take advantage from the fact that R assigns values to method parameters based on
+the order in which they are given. Therefore, we can simplify the above code to:
+
+\begin{footnotesize}
+\begin{verbatim}
+add.triple(store,
+  "http://example.org/Subject",
+  "http://example.org/Predicate",
+  "http://example.org/Object"
+)
+add.data.triple(store,
+  "http://example.org/Subject",
+  "http://example.org/Predicate",
+  "Literal value"
+)
+\end{verbatim}
+\end{footnotesize}
+
 
 Data can be loaded from file by providing a file name and a format ("RDF/XML", "TURTLE",
 "N-TRIPLES", and "N3"):
 
+\begin{footnotesize}
 \begin{verbatim}
 store = load.rdf("file.n3", format="N3")
 \end{verbatim}
+\end{footnotesize}
 
 \subsection{Example}
 
 As an example, we will here create RDF for a small data set with information on five single nucleotide
 polymorphisms (SNPs) in the BRCA1 gene, extracted with biomaRt~\cite{Durinck2005}:
 
+\begin{footnotesize}
 \begin{verbatim}
 library(biomaRt)
 mart = biomaNoy2009Rt::useMart(biomart="snp", dataset="hsapiens_snp")
@@ -141,6 +169,7 @@ data = biomaRt::getBM(
   attributes=attribs, filters=c("snp_filter"), values=brca1, mart=mart
 )
 \end{verbatim}
+\end{footnotesize}
 
 Following the guidelines for generating RDF outlined by Open PHACTS~\cite{Haupt2013,Williams2012}, we identify concepts
 and matching ontology terms, using BioPortal~\cite{Noy2009}: SNP, gene, chromosome,
@@ -153,11 +182,11 @@ provided by the BioMart.
 \caption{A list of ontology terms for the concepts in the BRCA1 SNP example. Ontology acronyms and the prefixes
 used are explained in the text.}
 \begin{center}
+\begin{footnotesize}
 \begin{tabular}{l|l|l|l}
  \textbf{concept} & \textbf{ontology} & \textbf{term} & \textbf{URI} \\
 \hline
  SNP & SIO & snp & sio:SIO\_010027 \\
- gene & SO & gene & obo:SO\_0000704 \\
  chromosome & GO & chromosome & obo:GO\_0005694 \\
  article &  BIBO & article & bibo:Article \\
  allele & SO & allele & obo:SO\_0001023 \\
@@ -165,44 +194,145 @@ used are explained in the text.}
  PubMed identifier & CHEMINF & PubMed identifier & sio:CHEMINF\_000302\\
  chromosome number & TMO & chromosome nuber & tmo:TMO\_0157 \\
  chromosomal sequence position & TMO & chromosomal sequence position & tmo:TMO\_0122 \\
-\end{tabular}CiTO
+\end{tabular}
+\end{footnotesize}
 \end{center}
 \end{table}
 
 Taking advantage of existing ontologies. The choice is somewhat arbitrary and no ontological
 analysis has been done, e.g. on specified domain and ranges of predicates and implied
 properties of classes. The following ontologies are used:
-SIO is the Semanticscience Integrated Ontology; TMO is the Translational Medicine Ontology;
-SO is the Sequence Types and Features Ontology; GO is the Gene Ontology;
-BIBO is the Bibliographic Ontology; CiTO is the Citation Typing Ontology;
+SIO is the Semanticscience Integrated Ontology;
+TMO is the Translational Medicine Ontology;
+%SO is the Sequence Types and Features Ontology;
+GO is the Gene Ontology;
+BIBO is the Bibliographic Ontology;
+CiTO is the Citation Typing Ontology;
 ... Prefixes used in the term Uniform Resource Identifiers (URIs) include
 \textit{sio} for \url{http://semanticscience.org/resource/},
 \textit{tmo} for \url{http://www.w3.org/2001/sw/hcls/ns/transmed/},
 \textit{obo} for \url{http://purl.obolibrary.org/obo/},
 \textit{bibo} for \url{http://purl.org/ontology/bibo/},
-\textit{cito} for \url{} ...
+\textit{cito} for \url{http://purl.org/spar/cito/} ...
+
+We can define these prefixes in the store with the following code,
+the first prefix in the full syntax and the other namespaces
+leaving out the parameters names:
+
+\begin{footnotesize}
+\begin{verbatim}
+snpStore = new.rdf(ontology=FALSE)
+add.prefix(snpStore,
+  prefix="sio", namespace="http://semanticscience.org/resource/"
+)
+add.prefix(snpStore, "tmo", "http://www.w3.org/2001/sw/hcls/ns/transmed/")
+add.prefix(snpStore, "obo", "http://purl.obolibrary.org/obo/")
+add.prefix(snpStore, "bibo", "http://purl.org/ontology/bibo/")
+add.prefix(snpStore, "cito", "http://purl.org/spar/cito/")
+add.prefix(snpStore, "snp", "http://example.org/snp/")
+add.prefix(snpStore, "art", "http://example.org/article/")
+add.prefix(snpStore, "loc", "http://example.org/location/")
+add.prefix(snpStore, "all", "http://example.org/allele/")
+add.prefix(snpStore, "ex", "http://example.org/onto/")
+add.prefix(snpStore, "pubmedid", "http://example.org/pubmed/")
+add.prefix(snpStore, "snpid", "http://example.org/snpid/")
+\end{verbatim}
+\end{footnotesize}
+
+Furthermore, we can define a number of classes and predicate, for reduced code:
+
+\begin{footnotesize}
+\begin{verbatim}
+snpClass = "http://semanticscience.org/resource/SIO_010027"
+chromosomeClass = "http://purl.obolibrary.org/obo/GO_0005694"
+pubmedIdClass = "http://semanticscience.org/resource/CHEMINF_000302"
+snpIdClass = "http://www.w3.org/2001/sw/hcls/ns/transmed/TMO_0161"
+articleClass = "http://purl.org/ontology/bibo/Article"
+alleleClass = "http://purl.obolibrary.org/obo/SO_0001023"
+
+rdfTypePred = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+isDescribedBy = "http://purl.org/spar/cito/isDescribedBy"
+onChromosome = "http://example.org/onto/onChromosome"
+hasAttribute = "http://semanticscience.org/resource/CHEMINF_000200"
+hasStart = "http://example.org/onto/hasStart"
+hasValue = "http://semanticscience.org/resource/SIO_000300"
+hasValidation = "http://example.org/onto/hasValidation"
+hasAllele = "http://example.org/onto/hasAllele"
+hasLocation = "http://example.org/onto/hasLocation"
+\end{verbatim}
+\end{footnotesize}
+
 
 Using these ontology terms we can define the translations of the BioMart-extracted
 data into RDF:
 
+\begin{footnotesize}
 \begin{verbatim}
-snpStore = new.rdf(ontology=FALSE)
-rdfTypePred = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-snpClass = "http://semanticscience.org/resource/SIO_010027"
 createEntry <- function(row) {
   snpID = row[1]
+  chr = row[2]
+  chrStart = row[3]
+  validation = row[4]
+  pubmedID = row[5]
+  allele = row[6]
+
   snpSubject = paste("http://example.org/snp/", snpID, sep="")
-  add.triple(snpStore,
-    subject=snpSubject, predicate=rdfTypePred, object=snpClass
+  pubmedObject = paste("http://example.org/article/a", pubmedID, sep="")
+  alleleObject = paste("http://example.org/allele/", snpID, sep="")
+  chrObject = paste("http://example.org/location/", snpID, sep="")
+
+  snpIDObject = paste("http://example.org/snpid/", snpID, sep="")
+  pubmedIDObject = paste("http://example.org/pubmed/a", pubmedID, sep="")
+
+  add.triple(snpStore, snpSubject, rdfTypePred, snpClass)
+  add.triple(snpStore, snpSubject, hasAttribute, snpIDObject)
+  add.triple(snpStore, snpIDObject, rdfTypePred, snpIdClass)
+  add.data.triple(snpStore, snpIDObject, hasValue, snpID)
+  # validation information
+  sapply(unlist(strsplit(validation, split=",")),
+    function(validationItem) {
+      if (!is.null(validationItem)) {
+        add.data.triple(snpStore,
+          snpSubject, hasValidation, validationItem
+        )
+      }
+    }
   )
+  # allele information
+  add.triple(snpStore, snpSubject, hasAllele, alleleObject)
+  add.triple(snpStore, alleleObject, rdfTypePred, alleleClass)
+  add.data.triple(snpStore, alleleObject, hasValue, allele)
+  # chromosome location information
+  add.triple(snpStore, snpSubject, hasLocation, chrObject)
+  add.triple(snpStore, chrObject, rdfTypePred, chromosomeClass)
+  add.data.triple(snpStore, chrObject, onChromosome, chr)
+  add.data.triple(snpStore, chrObject, hasStart, chrStart)
+  # pubmed information
+  add.triple(snpStore, snpSubject, isDescribedBy, pubmedObject)
+  add.triple(snpStore, pubmedObject, rdfTypePred, articleClass)
+  add.triple(snpStore, pubmedObject, hasAttribute, pubmedIDObject)
+  add.triple(snpStore, pubmedIDObject, rdfTypePred, pubmedIdClass)
+  add.data.triple(snpStore, pubmedIDObject, hasValue, pubmedID)
 }
 \end{verbatim}
+\end{footnotesize}
 
-We can then just iterate over the actual data with:
+We can then just iterate over the actual data with and safe it to a file:
 
+\begin{footnotesize}
 \begin{verbatim}
-apply(data, MARGIN=1, FUN=createEntry(row) )
+apply(data, MARGIN=1, FUN=createEntry)
+save.rdf(snpStore, filename="test.n3", format="N3")
 \end{verbatim}
+\end{footnotesize}
+
+Or output is as a Notation3 string with:
+
+\begin{footnotesize}
+\begin{verbatim}
+cat(asString.rdf(snpStore))
+\end{verbatim}
+\end{footnotesize}
 
 \subsection{SPARQL}
 
@@ -210,6 +340,7 @@ Local (in-memory) triple stores can be queried with the \emph{sparql.rdf} method
 it with the store to query and a string with the SPARQL query. For example, to get all resource
 types, we can use this:
 
+\begin{footnotesize}
 \begin{verbatim}
 sparql.rdf(store,
   paste(
@@ -219,12 +350,14 @@ sparql.rdf(store,
   )
 ) 
 \end{verbatim}
+\end{footnotesize}
 
 Remote SPARQL end point can be queried in a similar fashion: we replace the triple store with the
 URL pointing to the SPARQL end point. For example, if we want to
 extract all properties of the CHEMBL615603 assay from ChEMBL~\cite{Gaulton2012,Willighagen2013}
 we can use the following remote query:
 
+\begin{footnotesize}
 \begin{verbatim}
 results = sparql.remote(
   "http://rdf.farmbio.uu.se/chembl/sparql",
@@ -236,6 +369,7 @@ results = sparql.remote(
   )
 ) 
 \end{verbatim}
+\end{footnotesize}
 
 Jena parses the SPARQL query too, which requires the query to be valid
 against both Jena and the SPARQL end point. Because the SPARQL specification has tool specif
@@ -247,9 +381,11 @@ removing the problem and allowing you to use extensions of the end point.
 The results object is a matrix with the variable names from the SPARQL query as column names.
 This allows us to get a predicates with:
 
+\begin{footnotesize}
 \begin{verbatim}
 results[,"predicate"]
 \end{verbatim}
+\end{footnotesize}
 
 \subsection{Example}
 
