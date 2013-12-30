@@ -433,6 +433,91 @@ annotations = sparql.remote(
 \end{verbatim}
 \end{footnotesize}
 
+\subsubsection{Example}
+
+A second example combines regular REST or -like services that return RDF with a local SPARQL query.
+For example, this is the approach used in Bioclipse to interact with many of the OpenTox
+services~\cite{Willighagen2013}, but can be used for the Open PHACTS Linked Data API
+too~\cite{Williams2012}. For example, we can get data from an OpenTox data set using
+RCurl~\cite{Hardy2010,Lang2013}, in this example data set 112 with 320 compounds,
+which originates from the ToxCast project~\cite{Dix2007}:
+
+\begin{footnotesize}
+\begin{verbatim}
+library(RCurl)
+rdfContent = getURL(
+  paste(
+    "http://apps.ideaconsult.net:8080/ambit2/dataset/112/compounds",
+    "media=text/n3",
+    sep="?"
+  ),
+  write=basicTextGatherer()
+)
+store = fromString.rdf(rdfContent, format="N3")
+compounds = sparql.rdf(store,
+  paste(
+    "PREFIX ot: <http://www.opentox.org/api/1.1#>",
+    "SELECT DISTINCT ?compound WHERE {",
+    " ?compound a ot:Compound",
+    "}"
+  )
+)
+\end{verbatim}
+\end{footnotesize}
+
+In fact, we can continue getting further detail about these compound by repeating the same
+approach on the compound URIs. Let's assume we are further interested in the SMILES string.
+This feature has the URI \url{http://apps.ideaconsult.net:8080/ambit2/feature/21753}. We
+add this as the list of features to retrieve:
+
+\begin{footnotesize}
+\begin{verbatim}
+feature = "http://apps.ideaconsult.net:8080/ambit2/feature/21753"
+getOptions = paste(
+  paste("feature_uris[]", curlEscape(feature), sep="="),
+  paste("media", curlEscape("application/rdf+xml"),sep="="),
+  sep="&"
+)
+\end{verbatim}
+\end{footnotesize}
+
+We can then use the R apply() method to retrieve the SMILES for each structure with:
+
+\begin{footnotesize}
+\begin{verbatim}
+result = apply(compounds, MARGIN=1, function(x) {
+  compound = x["compound"];
+  compoundURI = paste(compound, getOptions, sep="?")
+  print(paste("Downloading",compoundURI))
+  cmpdContent = getURL(
+    compoundURI, write=basicTextGatherer()
+  )
+  fromString.rdf(cmpdContent, format="RDF/XML", appendTo=store)
+})
+\end{verbatim}
+\end{footnotesize}
+
+Finally, we use SPARQL again to list all the SMILES strings for the compounds:
+
+\begin{footnotesize}
+\begin{verbatim}
+query =  paste(
+  "PREFIX ot: <http://www.opentox.org/api/1.1#> ",
+  "SELECT DISTINCT ?compound ?value WHERE {",
+  " ?s ?o [ ot:feature <", feature, "> ;",
+  "   ot:value ?value ",
+  " ] ;",
+  "   ot:compound ?compound . ",
+  "}",
+  sep=""    
+)
+compoundSMILESes = sparql.rdf(store, query)
+\end{verbatim}
+\end{footnotesize}
+
+This results in a matrix with compound URIs in one column and SMILES strings in another, ready for
+use by other R packages.
+
 \section{Conclusions}
 
 The rrdflibs and rrdf packages bring basic semantic web technologies to R statistical environment.
