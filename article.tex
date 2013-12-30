@@ -31,6 +31,24 @@ Manuscript type: research article
 
 \newpage
 \begin{abstract}
+\noindent
+\textbf{Background}. Semantic Web technologies are increasingly used in biological database systems.
+The improved expressiveness show advantages in tracking provenance and allowing knowledge to be
+more explicitly annotated. The list of semantic web standards needs a complementary set of tools to
+handle data in those formats to use them in bioinformatics workflows. \\
+\textbf{Methods}. The approach proposed in this paper uses the Apache Jena library to create an
+environment where semantic web technologies can be use in the statistical environment R. The
+code is exposed as two R packages available from the Comprehensive R Archive Network (CRAN). 
+The RJava libary and a custom convenience class is used to bridge between R and the Jena library.\\
+\textbf{Results}. We here present two examples showing how the Resource Description Framework
+(RDF) and SPARQL query standards can be employed in R. The first example takes input on BRCA1 SNPs
+from a BioMart and converts this into a RDF data set. The second example runs a query on an
+experimental remote SPARQL end point provided by Uniprot, and searches textual annotations of
+proteins encoded by the BRCA1 gene. \\
+\textbf{Discussion}. The two provided library bring basic semantic web technologies to R.
+While only a subset of Apache Jena is currently exposed, it provides key methods to deal with
+RDF data and resources. The libraries are freely available from the CRAN under the 
+Affero GNU Public Licence version 3: \url{http://cran.r-project.org/web/packages/rrdf/}.
 \end{abstract}
 
 \section{Introduction}
