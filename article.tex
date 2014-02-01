@@ -40,11 +40,12 @@ handle data in those formats to use them in bioinformatics workflows. \\
 environment where semantic web technologies can be use in the statistical environment R. The
 code is exposed as two R packages available from the Comprehensive R Archive Network (CRAN). 
 The RJava library and a custom convenience class is used to bridge between R and the Jena library.\\
-\textbf{Results}. We here present two examples showing how the Resource Description Framework
+\textbf{Results}. We here present three examples showing how the Resource Description Framework
 (RDF) and SPARQL query standards can be employed in R. The first example takes input on BRCA1 SNPs
 from a BioMart and converts this into a RDF data set. The second example runs a query on an
 experimental remote SPARQL end point provided by Uniprot, and searches textual annotations of
-proteins encoded by the BRCA1 gene. \\
+proteins encoded by the BRCA1 gene. The third example shows how the package can be used to handle
+RDF returned by REST-like web services of OpenTox. \\
 \textbf{Discussion}. The two provided library bring basic semantic web technologies to R.
 While only a subset of Apache Jena is currently exposed, it provides key methods to deal with
 RDF data and resources. The libraries are freely available from the CRAN under the 
