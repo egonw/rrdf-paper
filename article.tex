@@ -196,7 +196,7 @@ polymorphisms (SNPs) in the BRCA1 gene, extracted with biomaRt~\cite{Durinck2005
 \begin{footnotesize}
 \begin{verbatim}
 library(biomaRt)
-mart = biomaNoy2009Rt::useMart(biomart="snp", dataset="hsapiens_snp")
+mart = biomaRt::useMart(biomart="snp", dataset="hsapiens_snp")
 brca1 = c("rs16940","rs16941", "rs16942", "rs799916", "rs799917")
 attribs = c(
   "refsnp_id", "chr_name", "chrom_start",
