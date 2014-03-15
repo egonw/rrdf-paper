@@ -33,11 +33,11 @@ Manuscript type: research article
 \begin{abstract}
 \noindent
 \textbf{Background}. Semantic Web technologies are increasingly used in biological database systems.
-The improved expressiveness show advantages in tracking provenance and allowing knowledge to be
+The improved expressiveness shows advantages in tracking provenance and allowing knowledge to be
 more explicitly annotated. The list of semantic web standards needs a complementary set of tools to
 handle data in those formats to use them in bioinformatics workflows. \\
 \textbf{Methods}. The approach proposed in this paper uses the Apache Jena library to create an
-environment where semantic web technologies can be use in the statistical environment R. The
+environment where semantic web technologies can be used in the statistical environment R. The
 code is exposed as two R packages available from the Comprehensive R Archive Network (CRAN). 
 The RJava library and a custom convenience class is used to bridge between R and the Jena library.\\
 \textbf{Results}. We here present three examples showing how the Resource Description Framework
@@ -48,8 +48,8 @@ proteins encoded by the BRCA1 gene. The third example shows how the package can 
 RDF returned by OpenTox web services. \\
 \textbf{Discussion}. The two provided library bring basic semantic web technologies to R.
 This paper only shows examples from the biology domain, but we believe the approaches are generally
-applicable. It currently only exposes a subset of key Apache Jena is exposed, but the framework
-makes it easy to make more of the library's functionality available.
+applicable. It currently only exposes a subset of key Apache Jena, but the rrdf package
+makes it easy to make more of the library's functionality, such as the shortest path finding.
 The rrdf libraries are freely available from the CRAN under the 
 Affero GNU Public License version 3: \url{http://cran.r-project.org/web/packages/rrdf/}.
 \end{abstract}
@@ -57,37 +57,41 @@ Affero GNU Public License version 3: \url{http://cran.r-project.org/web/packages
 \section{Introduction}
 
 Semantic Web technologies are finding their way into biological
-databases~\cite{Belleau2008,Chen2010,Samwald2011,Williams2012,Willighagen2013}. The recent launch of the
+databases~\cite{Belleau2008,Chen2010,Samwald2011,Williams2012,Willighagen2013}
+and the pace is increasing. The recent launch of the the
 Resource Description Framework (RDF) services at the European Bioinformatics Institute is a good example
-of the impact it has on the field, despite the adoption taking place for longer already~\cite{EBIRDFPlatform}.
+of the impact it has on the field~\cite{EBIRDFPlatform}.
 At the same time, most new databases do not yet use semantic web technologies, which may be partly
-caused by the lack of availability of tools to handle RDF data.
+caused by the lack of availability of tools to handle RDF data, and in part because of a lack
+of tutorials and illustrative examples.
 
 RDF allows the combination of a machine readable framework with the use of ontologies that allow
 sharing data and the meaning in the some data exchange format. This is enabled by a set of open
 specifications, such as the underlying RDF, RDF Schema, the Web Ontology Language, and serialization formats
-such as RDF/XML, N-TRIPLES, Notation3 (N3), and Turtle. Crucial, however, seems the specification of the SPARQL
-query language that allow extracting data from local or remote RDF triple stores~\cite{Seaborne2009}. In fact,
+such as RDF/XML, N-TRIPLES, Notation3 (N3), and Turtle. Crucial, however, seems to be the specification of the SPARQL
+query language that allows extracting data from local or remote RDF triple stores~\cite{Seaborne2009}. In fact,
 federated SPARQL queries allow extracting data from multiple triple stores at the same time.
 
 At the same time, R has established itself as a key tool for statistics, particularly in the biological
-sciences. Many packages have been developed for this domain and are available from CRAN and Bioconductor,
+sciences. Many packages have been developed for this domain and are available from CRAN and Bioconductor~\cite{VanHage2013,Gentleman2004},
 allowing to combine various bioinformatics and data analysis approaches. These packages include,
-for example, biomaRt, which have the purpose of extracting information from a remote database.
+for example, biomaRt, which have the purpose of extracting information from a remote database~\cite{Durinck2005}.
 
 We here introduce two packages, rrdflibs and rrdf, for the statistics environment R, based on the Apache
 Jena library and the RJava interface to Java~\cite{RMan,Jena,RJava}. Compared to the existing SPARQL
-package, this package adds general RDF data handling~\cite{VanHage2013}. Using this package we show how
+package, this package adds general RDF data handling. Using this package we show how
 data aggregation can be performed from remote SPARQL end points, and how local data in other formats
 can be converted into RDF to querying with SPARQL.
 
 \section{Materials \& Methods}
 
-The rrdf packages provides RDF and SPARQL functionality by exposing that functionality from the
+The rrdf packages provide RDF and SPARQL functionality by exposing that functionality from the
 Apache Jena library~\cite{Jena}. The rrdflibs package contains the Apache Jena libraries and
-nothing more. This package is close to 7~MiB large but does not change frequently. The rrdf
-package contains the R functions that wrap around the Jena functionality and convert data structures
-where needed. This package is about 112~kiB but changes more frequently. Using this approach,
+nothing more. This package is close to 7~MiB large but is expected to change only with major new
+Jena releases. The rrdf package, however, contains the R functions that wrap around the Jena
+functionality and convert data structures where needed. This package is about 112~kiB and can
+now be updated without users having to download
+the same Jena libraries repetitively. Using this approach,
 the Comprehensive R Archive Network (CRAN) server has the least amount of download throughput.
 The Jena functionality is accessible using the rJava library~\cite{RJava} which handles loading
 of the Java archives and provides methods to instantiate classes and call methods.
@@ -100,7 +104,7 @@ rrdflibs package was updated for Apache Jena 2.11.
 \section{Results and Discussion}
 
 The rrdf package provides basic and less basic functionality for aggregation and analysis of RDF data.
-The package can be install and loaded with these commands:
+The package can be installed and loaded with these commands:
 
 \begin{footnotesize}
 \begin{verbatim}
@@ -111,11 +115,12 @@ library(rrdf)
 
 \subsection{Triple stores}
 
-To handle triples, we first need a triple store. At this moment only in-memory stores are
+To handle RDF triples, we first need a triple store. At this moment only in-memory stores are
 supported, though Jena's TDB also provides on-disk triple stores; this puts limitations to
 the amount of data you can analyze in one study.
 The package supports two kinds of stores, one that has minimal ontology support, and one
-basically just handles triples. Both can be created with the \textit{new.rdf} command:
+that basically just handles triples and does not have the overhead caused by reasoning.
+Both can be created with the \textit{new.rdf} command:
 
 \begin{footnotesize}
 \begin{verbatim}
@@ -124,9 +129,13 @@ store = new.rdf(ontology=FALSE)
 \end{verbatim}
 \end{footnotesize}
 
-When data is not read from a file or downloaded, but created from data in another format,
-such as an R matrix, individual triples can be added to a store. This works for both
-object properties and data properties. The former option links a subject to an object
+When data is not read from or downloaded downloaded as an RDF file (which is demonstrated below),
+but created from data in another format, such as an R matrix, data can be added as individual triples
+to the local store. By converting data into triples, it is later possible to make an integrated query
+that requires your local, new data and data from a remote database. Furthermore, this approach can
+also be used to expose study results as triples, such as in nanopublication format~\cite{Mons2011}.
+
+Triples can be created for both object and data properties. The former option links a subject to an object
 resource, while the latter links a subject to a literal value:
 
 \begin{footnotesize}
@@ -162,13 +171,20 @@ add.data.triple(store,
 \end{verbatim}
 \end{footnotesize}
 
-
-Data can be loaded from file by providing a file name and a format ("RDF/XML", "TURTLE",
+Additionally, data can be loaded from file by providing a file name and a format ("RDF/XML", "TURTLE",
 "N-TRIPLES", and "N3"):
 
 \begin{footnotesize}
 \begin{verbatim}
 store = load.rdf("file.n3", format="N3")
+\end{verbatim}
+\end{footnotesize}
+
+Similarly, triples in a local store can also be stored as an RDF file, for example with:
+
+\begin{footnotesize}
+\begin{verbatim}
+store = save.rdf(store, filename="copy.n3", format="N3")
 \end{verbatim}
 \end{footnotesize}
 
