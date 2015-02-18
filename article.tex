@@ -50,8 +50,8 @@ RDF returned by OpenTox web services. \\
 This paper only shows examples from the biology domain, but we believe the approaches are generally
 applicable. It currently only exposes a subset of key Apache Jena, but the rrdf package
 makes it easy to make more of the library's functionality, such as the shortest path finding.
-The rrdf libraries are freely available from the CRAN under the 
-Affero GNU Public License version 3: \url{http://cran.r-project.org/web/packages/rrdf/}.
+The rrdf packages are freely available from GitHub under the 
+Affero GNU Public License version 3: \url{https://github.com/egonw/rrdf/}.
 \end{abstract}
 
 \section{Introduction}
@@ -87,19 +87,19 @@ can be converted into RDF to querying with SPARQL.
 
 The rrdf packages provide RDF and SPARQL functionality by exposing that functionality from the
 Apache Jena library~\cite{Jena}. The rrdflibs package contains the Apache Jena libraries and
-nothing more. This package is close to 7~MiB large but is expected to change only with major new
+nothing more. This package is about 7~MiB large but is expected to change only with major new
 Jena releases. The rrdf package, however, contains the R functions that wrap around the Jena
 functionality and convert data structures where needed. This package is about 112~kiB and can
 now be updated without users having to download
-the same Jena libraries repetitively. Using this approach,
-the Comprehensive R Archive Network (CRAN) server has the least amount of download throughput.
+the same Jena libraries repetitively. Using this approach, the download size is minimized.
 The Jena functionality is accessible using the rJava library~\cite{RJava} which handles loading
 of the Java archives and provides methods to instantiate classes and call methods.
 
-The source code of the package is available from GitHub at \url{http://github.com/egonw/rrdf/} and
-binary packages are available from CRAN at \url{http://cran.r-project.org/web/packages/rrdf/}.
-The first patch is from March 2011 while the most recent patches are from late 2013 when the
-rrdflibs package was updated for Apache Jena 2.11.
+The source code of the package is available from GitHub at \url{http://github.com/egonw/rrdf/}.
+Binary packages are available here too and can be installed easily from GitHub using the 
+devtools package~\cite{devtools}. The first patch of the library is from March 2011 while the
+most recent patches are from late 2013 when the rrdflibs package was updated for Apache Jena 2.11.
+Early 2015 the rrdflibs package was updated to Apache Jena 2.12.1.
 
 \section{Results and Discussion}
 
